@@ -4,6 +4,7 @@ using Coborzan_Tudor_Lab2_M.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Coborzan_Tudor_Lab2_M.Migrations
 {
     [DbContext(typeof(Coborzan_Tudor_Lab2_MContext))]
-    partial class Coborzan_Tudor_Lab2_MContextModelSnapshot : ModelSnapshot
+    [Migration("20251218225537_ModifyAuthorBookRelationship")]
+    partial class ModifyAuthorBookRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

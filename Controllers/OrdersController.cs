@@ -10,22 +10,23 @@ using Coborzan_Tudor_Lab2_M.Models;
 
 namespace Coborzan_Tudor_Lab2_M.Controllers
 {
-    public class AuthorsController : Controller
+    public class OrdersController : Controller
     {
         private readonly Coborzan_Tudor_Lab2_MContext _context;
 
-        public AuthorsController(Coborzan_Tudor_Lab2_MContext context)
+        public OrdersController(Coborzan_Tudor_Lab2_MContext context)
         {
             _context = context;
         }
 
-        // GET: Authors
+        // GET: Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Authors.ToListAsync());
+            var coborzan_Tudor_Lab2_MContext = _context.Order.Include(o => o.Book).Include(o => o.Customer);
+            return View(await coborzan_Tudor_Lab2_MContext.ToListAsync());
         }
 
-        // GET: Authors/Details/5
+        // GET: Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,42 +34,45 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
                 return NotFound();
             }
 
-            var authors = await _context.Authors
-                .Include(b => b.Books)
-                .ThenInclude(g =>g.Genre)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (authors == null)
+            var order = await _context.Order
+                .Include(o => o.Book)
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(m => m.OrderID == id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(authors);
+            return View(order);
         }
 
-        // GET: Authors/Create
+        // GET: Orders/Create
         public IActionResult Create()
         {
+            ViewData["BookID"] = new SelectList(_context.Book, "ID", "ID");
+            ViewData["CustomerID"] = new SelectList(_context.Customer, "CustomerID", "CustomerID");
             return View();
         }
 
-        // POST: Authors/Create
+        // POST: Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,FirstName,LastName")] Authors authors)
+        public async Task<IActionResult> Create([Bind("OrderID,CustomerID,BookID,OrderDate")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(authors);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(authors);
+            ViewData["BookID"] = new SelectList(_context.Book, "ID", "ID", order.BookID);
+            ViewData["CustomerID"] = new SelectList(_context.Customer, "CustomerID", "CustomerID", order.CustomerID);
+            return View(order);
         }
 
-        // GET: Authors/Edit/5
+        // GET: Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,22 +80,24 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
                 return NotFound();
             }
 
-            var authors = await _context.Authors.FindAsync(id);
-            if (authors == null)
+            var order = await _context.Order.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(authors);
+            ViewData["BookID"] = new SelectList(_context.Book, "ID", "ID", order.BookID);
+            ViewData["CustomerID"] = new SelectList(_context.Customer, "CustomerID", "CustomerID", order.CustomerID);
+            return View(order);
         }
 
-        // POST: Authors/Edit/5
+        // POST: Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FirstName,LastName")] Authors authors)
+        public async Task<IActionResult> Edit(int id, [Bind("OrderID,CustomerID,BookID,OrderDate")] Order order)
         {
-            if (id != authors.ID)
+            if (id != order.OrderID)
             {
                 return NotFound();
             }
@@ -100,12 +106,12 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
             {
                 try
                 {
-                    _context.Update(authors);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AuthorsExists(authors.ID))
+                    if (!OrderExists(order.OrderID))
                     {
                         return NotFound();
                     }
@@ -116,10 +122,12 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(authors);
+            ViewData["BookID"] = new SelectList(_context.Book, "ID", "ID", order.BookID);
+            ViewData["CustomerID"] = new SelectList(_context.Customer, "CustomerID", "CustomerID", order.CustomerID);
+            return View(order);
         }
 
-        // GET: Authors/Delete/5
+        // GET: Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,34 +135,36 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
                 return NotFound();
             }
 
-            var authors = await _context.Authors
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (authors == null)
+            var order = await _context.Order
+                .Include(o => o.Book)
+                .Include(o => o.Customer)
+                .FirstOrDefaultAsync(m => m.OrderID == id);
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(authors);
+            return View(order);
         }
 
-        // POST: Authors/Delete/5
+        // POST: Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var authors = await _context.Authors.FindAsync(id);
-            if (authors != null)
+            var order = await _context.Order.FindAsync(id);
+            if (order != null)
             {
-                _context.Authors.Remove(authors);
+                _context.Order.Remove(order);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AuthorsExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Authors.Any(e => e.ID == id);
+            return _context.Order.Any(e => e.OrderID == id);
         }
     }
 }
