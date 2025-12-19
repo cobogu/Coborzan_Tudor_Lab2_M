@@ -15,7 +15,5 @@
         }
 
         public ICollection<Book>? Books { get; set; }
-
-
     }
 }

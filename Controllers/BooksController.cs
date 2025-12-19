@@ -20,58 +20,12 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
         }
 
         // GET: Books
-       /* public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var coborzan_Tudor_Lab2_MContext = _context.Book
                 .Include(b => b.Genre)
                 .Include(b => b.Authors); ;
             return View(await coborzan_Tudor_Lab2_MContext.ToListAsync());
-        }
-       */
-
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
-        {
-            ViewData["TitleSortParm"] = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
-            ViewData["PriceSortParm"] = sortOrder == "Price" ? "price_desc" : "Price";
-            ViewData["CurrentFilter"] = searchString;
-            ViewData["AuthorSortParm"] = String.IsNullOrEmpty(sortOrder) ? "author_desc" : "";
-
-            var books = from b in _context.Book
-                        join a in _context.Authors on b.AuthorsID equals a.ID
-                        select new BookViewModel
-                        {
-                            ID = b.ID,
-                            Title = b.Title,
-                            Price = b.Price,
-                            FullName = a.FirstName + " " + a.LastName
-                        };
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                books = books.Where(s => s.Title.Contains(searchString)|| s.FullName.Contains(searchString));
-            }
-            switch (sortOrder)
-            {
-                case "title_desc":
-                    books = books.OrderByDescending(b => b.Title);
-                    break;
-                case "Price":
-                    books = books.OrderBy(b => b.Price);
-                    break;
-                case "price_desc":
-                    books = books.OrderByDescending(b => b.Price);
-                    break;
-                case "Author":
-                    books = books.OrderBy(b => b.FullName);
-                    break;
-                case "author_desc":
-                    books = books.OrderByDescending(b => b.FullName);
-                    break;
-                default:
-                    books = books.OrderBy(b => b.Title);
-                    break;
-            
-            }
-            return View(await books.AsNoTracking().ToListAsync());
         }
 
         // GET: Books/Details/5
@@ -83,11 +37,8 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
             }
 
             var book = await _context.Book
-                .Include(g => g.Genre)
-                .Include(a => a.Authors)
-                .Include(s => s.Orders)
-                .ThenInclude(e => e.Customer)
-                .AsNoTracking()
+                .Include(b => b.Genre)
+                .Include(b => b.Authors)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (book == null)
             {

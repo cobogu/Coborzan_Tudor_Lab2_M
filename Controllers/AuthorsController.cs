@@ -34,9 +34,6 @@ namespace Coborzan_Tudor_Lab2_M.Controllers
             }
 
             var authors = await _context.Authors
-                .Include(b => b.Books)
-                .ThenInclude(g =>g.Genre)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (authors == null)
             {

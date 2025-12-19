@@ -128,9 +128,6 @@ namespace Coborzan_Tudor_Lab2_M.Migrations
                     b.Property<int?>("CustomerID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("OrderID");
 
                     b.HasIndex("BookID");
@@ -144,8 +141,7 @@ namespace Coborzan_Tudor_Lab2_M.Migrations
                 {
                     b.HasOne("Coborzan_Tudor_Lab2_M.Models.Authors", "Authors")
                         .WithMany("Books")
-                        .HasForeignKey("AuthorsID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("AuthorsID");
 
                     b.HasOne("Coborzan_Tudor_Lab2_M.Models.Genre", "Genre")
                         .WithMany("Books")
